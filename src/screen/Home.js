@@ -21,7 +21,7 @@ class Home extends Component {
                 total = total + meusInvestimentos[index].saldoTotalDisponivel
             }
 
-            this.setState({ data: meusInvestimentos, totalInvestimento: total })
+            this.setState({ data: meusInvestimentos, totalInvestimento: total.toFixed(2) })
         }
     }
 
@@ -64,7 +64,7 @@ class Home extends Component {
                 <View style={styles.hr} />
                 <View style={styles.viewHeader}>
                     <Text style={styles.textTitle}>Investimento</Text>
-                    <Text style={styles.textDetail}>R${this.state.totalInvestimento}</Text>
+                    <Text style={styles.textDetail}>R$ {this.state.totalInvestimento}</Text>
                 </View>
                 <View style={styles.viewInvestimentos}>
                     <FlatList

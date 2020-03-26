@@ -1,37 +1,42 @@
 import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet, FlatList, Alert, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import CustomLabel from '../components/CustomLabel';
+import CustomItem from '../components/CustomItem';
 
 class Description extends Component {
     constructor(props) {
         super(props);
-        this.state = { investimento: props.route.params.investimento };
+        this.state = { 
+            investimento: props.route.params.investimento,
+            totalResgate : 0
+        };
     }
 
     _renderItem = ({ item }) => {
+ 
+        item.valor = this.state.investimento.saldoTotalDisponivel * item.percentual/100
+        
         return (
             <View style={styles.viewItem}>
-                <CustomLabel labelTitle={'Ação'} labelDetail={item.nome} />
-                <View style={{ height: 1, backgroundColor: '#f7f7f7' }} />
-                <CustomLabel labelTitle={'Saldo acumulado'} labelDetail={item.percentual} />
-                <View style={{ height: 1, backgroundColor: '#f7f7f7' }} />
-                <View style={styles.viewInput}>
-                    <Text style={{ fontSize: 12, }}>Valor a resgatar</Text>
-                    <TextInput
-                        placeholder="R$ Valor"
-                    />
-                </View>
+                <CustomItem acao={item} setValue={this._changeValueResgate} />
             </View>
         )
     }
 
-    _onItemPress = (item) => {
+    _onItemPress() {
         Alert.alert(
             'RESGATE EFETUADO ',
             'O valor solicitado estará em sua conte em até 5 dias úteis.',
             [{ text: 'NOVO RESGATE' },],
             { cancelable: false }
         )
+    }
+
+    _changeValueResgate = (value) => {
+        if (value != undefined && parseFloat(value) > 0) {
+            var total = parseFloat(this.state.totalResgate) + parseFloat(value)
+            this.setState({ totalResgate: total });
+        }
     }
 
     render() {
@@ -45,7 +50,7 @@ class Description extends Component {
                     <View style={styles.viewInvestimentos}>
                         <CustomLabel labelTitle={'Nome'} labelDetail={this.state.investimento.nome} />
                         <View style={{ height: 1, backgroundColor: '#f7f7f7' }} />
-                        <CustomLabel labelTitle={'Saldo total disonivel'} labelDetail={this.state.investimento.saldoTotalDisponivel} />
+                        <CustomLabel labelTitle={'Saldo total disonivel'} labelDetail={'R$ ' + this.state.investimento.saldoTotalDisponivel} />
                     </View>
                     <View style={styles.viewHeader}>
                         <Text style={styles.textTitle}>RESGATE DO SEU JEITO</Text>
@@ -58,11 +63,13 @@ class Description extends Component {
                         />
                     </View>
                     <View style={styles.viewInvestimentos}>
-                        <CustomLabel labelTitle={'Valor total a resgatar'} labelDetail={'R$ ' + this.state.investimento.nome} />
+                        <CustomLabel labelTitle={'Valor total a resgatar'} labelDetail={'R$ ' + this.state.totalResgate} />
                     </View>
                     <TouchableOpacity onPress={() => this._onItemPress()} 
-                        style={{ height: 40, marginTop: 20 , backgroundColor: "#fccb00", alignItems: 'center', alignContent: 'center', flexDirection: 'column',}}>
-                        <Text style={{color: '#004dcf', fontWeight: 'bold', fontSize: 15}}>CONFIRMAR RESGATE</Text>
+                        style={{ height: 50, marginTop: 20 , backgroundColor: "#fccb00", alignItems: 'center', alignContent: 'center', flexDirection: 'column',}}>
+                        <View style={styles.viewButton}>
+                            <Text style={{color: '#004dcf', fontWeight: 'bold', fontSize: 15}}>CONFIRMAR RESGATE</Text>
+                        </View>
                     </TouchableOpacity>
                 </ScrollView>
             </View>
@@ -107,9 +114,12 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
     },
-    viewInput: {
-        padding: 10,
-    }
+    viewButton:{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }
 });
 
 export default Description;
